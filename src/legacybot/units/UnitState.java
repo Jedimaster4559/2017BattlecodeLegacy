@@ -1,6 +1,6 @@
 package legacybot.units;
 
-public enum State {
+public enum UnitState {
     PASSIVE,
     AGGRESSIVE
 }
