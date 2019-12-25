@@ -1,12 +1,28 @@
 package legacybot.units;
 
 import battlecode.common.*;
+
+import java.util.Map;
+
 import static legacybot.tools.UnsortedTools.*;
 
 public class Lumberjack extends Unit {
 
+    UnitState state;
+    RobotInfo target;
+    int turnsWithoutVisibleTarget;
+    int primaryArchonTarget;
+    MapLocation primaryArchonTargetLocation;
+    int turnsInCurrentState;
+
     public Lumberjack(RobotController rc){
         super(rc);
+        this.state = UnitState.PASSIVE;
+        target = null;
+        turnsWithoutVisibleTarget = 0;
+        primaryArchonTarget = rand.nextInt(rc.getInitialArchonLocations(enemy).length);
+        primaryArchonTargetLocation = rc.getInitialArchonLocations(enemy)[primaryArchonTarget];
+        turnsInCurrentState = 0;
     }
 
     public void run() throws GameActionException {
@@ -18,28 +34,19 @@ public class Lumberjack extends Unit {
             // Try/catch blocks stop unhandled exceptions, which cause your robot to explode
             try {
 
-                // See if there are any enemy robots within striking range (distance 1 from lumberjack's radius)
-                RobotInfo[] robots = rc.senseNearbyRobots(RobotType.LUMBERJACK.bodyRadius+ GameConstants.LUMBERJACK_STRIKE_RADIUS, enemy);
+                checkState();
 
-                if(robots.length > 0 && !rc.hasAttacked()) {
-                    // Use strike() to hit all nearby robots!
-                    rc.strike();
-                } else {
-                    // No close robots, so search for robots within sight radius
-                    robots = rc.senseNearbyRobots(-1,enemy);
-
-                    // If there is a robot, move towards it
-                    if(robots.length > 0) {
-                        MapLocation myLocation = rc.getLocation();
-                        MapLocation enemyLocation = robots[0].getLocation();
-                        Direction toEnemy = myLocation.directionTo(enemyLocation);
-
-                        tryMove(toEnemy, rc);
-                    } else {
-                        // Move Randomly
-                        tryMove(randomDirection(), rc);
-                    }
+                switch (state){
+                    case PASSIVE:
+                        passive();
+                        break;
+                    case AGGRESSIVE:
+                        aggressive();
+                        break;
                 }
+
+
+
 
                 // Clock.yield() makes the robot wait until the next turn, then it will perform this loop again
                 Clock.yield();
@@ -48,6 +55,140 @@ public class Lumberjack extends Unit {
                 System.out.println("Lumberjack Exception");
                 e.printStackTrace();
             }
+        }
+    }
+
+    public void checkState() throws GameActionException{
+        if(rc.getRoundNum() - rc.readBroadcast(11) < 5){
+            state = UnitState.AGGRESSIVE;
+            turnsInCurrentState = 0;
+            rc.broadcast(11, rc.getRoundNum());
+            return;
+        }
+
+        if(state == UnitState.PASSIVE){
+            return;
+        } else {
+            if (turnsInCurrentState > 200 && turnsWithoutVisibleTarget > 200){
+                state = UnitState.PASSIVE;
+                turnsInCurrentState = 0;
+                return;
+            }
+        }
+    }
+
+    public void passive() throws GameActionException{
+        // Try to shake any trees that we can
+        tryShake(rc);
+
+        // Try to strike if we can
+        if(shouldStrike()){
+            rc.strike();
+        }
+
+        // Try to chop if we can
+        tryChop();
+
+        // No close robots, so search for robots within sight radius
+        RobotInfo[] robots = rc.senseNearbyRobots(-1,enemy);
+        TreeInfo[] neutralTrees = rc.senseNearbyTrees(-1, Team.NEUTRAL);
+        TreeInfo[] enemyTrees = rc.senseNearbyTrees(-1, enemy);
+
+        MapLocation myLocation = rc.getLocation();
+
+        // If there is a robot, move towards it
+        if(robots.length > 0) {
+            MapLocation enemyLocation = robots[0].getLocation();
+            Direction toEnemy = myLocation.directionTo(enemyLocation);
+
+            tryMove(toEnemy, rc);
+        } else if(enemyTrees.length > 0){
+            MapLocation treeLocation = enemyTrees[0].getLocation();
+            Direction toTree = myLocation.directionTo(treeLocation);
+
+            tryMove(toTree, rc);
+        } else if(neutralTrees.length > 0){
+            MapLocation treeLocation = neutralTrees[0].getLocation();
+            Direction toTree = myLocation.directionTo(treeLocation);
+
+            tryMove(toTree, rc);
+        }
+
+        // Try to shake any trees that we can
+        tryShake(rc);
+
+        // Try to strike if we can
+        if(shouldStrike()){
+            rc.strike();
+        }
+
+        // Try to chop if we can
+        tryChop();
+
+    }
+
+    public void aggressive() throws GameActionException {
+// Try to shake any trees that we can
+        tryShake(rc);
+
+        // Try to strike if we can
+        if(shouldStrike()){
+            rc.strike();
+        }
+
+        // Try to chop if we can
+        tryChop();
+
+        // No close robots, so search for robots within sight radius
+        RobotInfo[] robots = rc.senseNearbyRobots(-1,enemy);
+
+        MapLocation myLocation = rc.getLocation();
+
+        // If there is a robot, move towards it
+        if(robots.length > 0) {
+            MapLocation enemyLocation = robots[0].getLocation();
+            Direction toEnemy = myLocation.directionTo(enemyLocation);
+
+            tryMove(toEnemy, rc);
+        } else {
+            tryMove(myLocation.directionTo(primaryArchonTargetLocation), rc);
+        }
+
+        // Try to shake any trees that we can
+        tryShake(rc);
+
+        // Try to strike if we can
+        if(shouldStrike()){
+            rc.strike();
+        }
+
+        // Try to chop if we can
+        tryChop();
+    }
+
+    public boolean shouldStrike(){
+        // See if there are any enemy robots within striking range (distance 1 from lumberjack's radius)
+        RobotInfo[] enemyRobots = rc.senseNearbyRobots(RobotType.LUMBERJACK.bodyRadius+ GameConstants.LUMBERJACK_STRIKE_RADIUS, enemy);
+        RobotInfo[] friendlyRobots = rc.senseNearbyRobots(RobotType.LUMBERJACK.bodyRadius + GameConstants.LUMBERJACK_STRIKE_RADIUS, enemy.opponent());
+
+        if(!rc.hasAttacked() && enemyRobots.length > 0 && enemyRobots.length > friendlyRobots.length) {
+            // Use strike() to hit all nearby robots!
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public void tryChop() throws GameActionException {
+        TreeInfo[] neutralTrees = rc.senseNearbyTrees(RobotType.LUMBERJACK.bodyRadius + 1, Team.NEUTRAL);
+        TreeInfo[] enemyTrees = rc.senseNearbyTrees(RobotType.LUMBERJACK.bodyRadius + 1, enemy);
+
+        if(enemyTrees.length > 0 && rc.canChop(enemyTrees[0].getLocation())){
+            rc.chop(enemyTrees[0].getLocation());
+        }
+
+        if(neutralTrees.length > 0 && rc.canChop(neutralTrees[0].getLocation())){
+            rc.chop(neutralTrees[0].getLocation());
         }
     }
 }
