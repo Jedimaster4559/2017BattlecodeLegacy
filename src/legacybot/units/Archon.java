@@ -30,9 +30,9 @@ public class Archon extends Unit{
                 tryMove(randomDirection(), rc);
 
                 // Broadcast archon's location for other robots on the team to know
-                MapLocation myLocation = rc.getLocation();
-                rc.broadcast(0,(int)myLocation.x);
-                rc.broadcast(1,(int)myLocation.y);
+                //MapLocation myLocation = rc.getLocation();
+                //.broadcast(0,(int)myLocation.x);
+                //.broadcast(1,(int)myLocation.y);
 
                 // Clock.yield() makes the robot wait until the next turn, then it will perform this loop again
                 Clock.yield();
