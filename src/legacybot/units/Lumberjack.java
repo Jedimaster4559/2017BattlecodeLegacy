@@ -11,7 +11,6 @@ public class Lumberjack extends Unit {
 
     public void run() throws GameActionException {
         System.out.println("I'm a lumberjack!");
-        Team enemy = rc.getTeam().opponent();
 
         // The code you want your robot to perform every round should be in this loop
         while (true) {
