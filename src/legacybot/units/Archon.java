@@ -27,11 +27,11 @@ public class Archon extends Unit{
             // Try/catch blocks stop unhandled exceptions, which cause your robot to explode
             try {
 
-                // Try to shake any trees that we can
-                tryShake(rc);
+                //Start the round
+                roundStart();
 
-                checkVictory(rc);
-
+                // TODO: once we finish implementing state diagrams for every type of unit
+                // We can move this into the start method in Unit.java
                 checkState();
 
                 switch (state){
@@ -52,13 +52,8 @@ public class Archon extends Unit{
                         break;
                 }
 
-                // Try to shake any trees that we can
-                tryShake(rc);
-
-                checkVictory(rc);
-
-                // Clock.yield() makes the robot wait until the next turn, then it will perform this loop again
-                Clock.yield();
+                // End the round
+                roundEnd();
 
             } catch (Exception e) {
                 System.out.println("Archon Exception");

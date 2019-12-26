@@ -34,8 +34,8 @@ public class Lumberjack extends Unit {
             // Try/catch blocks stop unhandled exceptions, which cause your robot to explode
             try {
 
-                // Try to shake any trees that we can
-                tryShake(rc);
+                //Start the round
+                roundStart();
 
                 checkState();
 
@@ -48,12 +48,8 @@ public class Lumberjack extends Unit {
                         break;
                 }
 
-                // Try to shake any trees that we can
-                tryShake(rc);
-
-
-                // Clock.yield() makes the robot wait until the next turn, then it will perform this loop again
-                Clock.yield();
+                // End the round
+                roundEnd();
 
             } catch (Exception e) {
                 System.out.println("Lumberjack Exception");
