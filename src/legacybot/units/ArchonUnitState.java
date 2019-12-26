@@ -4,5 +4,6 @@ public enum ArchonUnitState {
     INITIAL,
     ECONOMY,
     SLOW,
-    AGGRESSIVE
+    AGGRESSIVE,
+    DEFENSIVE
 }
