@@ -11,7 +11,6 @@ public class Tank extends Unit {
 
     public void run() throws GameActionException{
         System.out.println("I'm a Tank");
-        Team enemy = rc.getTeam().opponent();
 
         // The code you want your robot to perform every round should be in this loop
         while (true) {
