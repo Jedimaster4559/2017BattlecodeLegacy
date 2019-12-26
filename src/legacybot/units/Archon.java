@@ -70,7 +70,7 @@ public class Archon extends Unit{
     public void checkState() throws GameActionException {
         int round = rc.getRoundNum();
 
-        if(round < 10){
+        if(round < 5){
             state = ArchonUnitState.INITIAL;
             return;
         }
@@ -96,23 +96,53 @@ public class Archon extends Unit{
         state = ArchonUnitState.FAST;
     }
 
-    public void slow(){
+    public void slow() throws GameActionException {
+        tryMove(randomDirection(), rc);
+    }
+
+    public void initial() throws GameActionException{
+        tryHire();
+
 
     }
 
-    public void initial(){
-
+    public void aggressive() throws GameActionException{
+        tryMove(randomDirection(), rc);
     }
 
-    public void aggressive(){
+    public void fast() throws GameActionException {
+        initial();
 
+        tryMove(randomDirection(), rc);
     }
 
-    public void fast(){
-
+    public void defensive() throws GameActionException{
+        tryMove(randomDirection(), rc);
     }
 
-    public void defensive(){
+    /**
+     * Attempts to hire a gardener in any direction
+     * @throws GameActionException
+     */
+    private void tryHire() throws GameActionException {
+        Direction hireDirection = randomDirection();
 
+        // TODO: This can be optimized a lot
+        // Try rotating instead of random
+        // Allow some type of escape cause this sometimes might break
+        if(rc.getTeamBullets() >= 100) {
+            while (!rc.canHireGardener(hireDirection)) {
+                hireDirection = randomDirection();
+                if(Clock.getBytecodesLeft() < 5000){
+                    break;
+                }
+            }
+        }
+
+        if(rc.canHireGardener(hireDirection)){
+            rc.hireGardener(hireDirection);
+            roundsSinceLastGardner = 0;
+            gardenersBuilt++;
+        }
     }
 }
