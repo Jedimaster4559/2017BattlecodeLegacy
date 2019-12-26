@@ -19,7 +19,7 @@
 /.idea/
 
 #changes made to the gradle.properties file
-gradle.properties
+*/gradle.properties
 
 
 # User-specific stuff:
