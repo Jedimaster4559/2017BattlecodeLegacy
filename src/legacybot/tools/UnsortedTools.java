@@ -94,4 +94,14 @@ public class UnsortedTools {
 
         return (perpendicularDist <= rc.getType().bodyRadius);
     }
+
+    public static void tryShake(RobotController rc) throws GameActionException{
+        TreeInfo[] trees = rc.senseNearbyTrees(rc.getType().bodyRadius + 1);
+
+        for(TreeInfo tree : trees){
+            if(rc.canShake(tree.getLocation())){
+                rc.shake(tree.getLocation());
+            }
+        }
+    }
 }
