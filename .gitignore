@@ -18,6 +18,9 @@
 *.iws
 /.idea/
 
+#changes made to the gradle.properties file
+gradle.properties
+
 
 # User-specific stuff:
 battlecode-scaffold.iws
