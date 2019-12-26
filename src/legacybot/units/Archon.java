@@ -80,16 +80,16 @@ public class Archon extends Unit{
             return;
         }
 
-        if(round > 1000 && round / 100 > gardenersBuilt){
+        if(round > 2000 || rc.readBroadcast(13) != 0){
+            state = ArchonUnitState.AGGRESSIVE;
+            return;
+        }
+
+        if(round > 1000 || (round / 100 > gardenersBuilt && round > 250)){
             state = ArchonUnitState.SLOW;
             return;
         } else if (round / 100 / totalArchonNum > gardenersBuilt){
             state = ArchonUnitState.FAST;
-            return;
-        }
-
-        if(round > 2000 || rc.readBroadcast(13) != 0){
-            state = ArchonUnitState.AGGRESSIVE;
             return;
         }
 
@@ -125,6 +125,11 @@ public class Archon extends Unit{
      * @throws GameActionException
      */
     private void tryHire() throws GameActionException {
+        // Attempt to fix the fact that it way over spawns the number of units we have
+        if(rc.senseNearbyRobots(RobotType.ARCHON.sensorRadius, enemy.opponent()).length > 5){
+            return;
+        }
+
         Direction hireDirection = randomDirection();
 
         // TODO: This can be optimized a lot
