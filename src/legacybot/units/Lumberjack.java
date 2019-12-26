@@ -112,6 +112,8 @@ public class Lumberjack extends Unit {
             Direction toTree = myLocation.directionTo(treeLocation);
 
             tryMove(toTree, rc);
+        } else {
+            tryMove(randomDirection(), rc);
         }
 
         // Try to shake any trees that we can
