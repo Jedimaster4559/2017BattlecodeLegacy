@@ -17,6 +17,9 @@ public class Tank extends Unit {
 
             // Try/catch blocks stop unhandled exceptions, which cause your robot to explode
             try {
+                // Try to shake any trees that we can
+                tryShake(rc);
+
                 MapLocation myLocation = rc.getLocation();
 
                 // See if there are any nearby enemy robots
@@ -33,6 +36,9 @@ public class Tank extends Unit {
 
                 // Move randomly
                 tryMove(randomDirection(), rc);
+
+                // Try to shake any trees that we can
+                tryShake(rc);
 
                 // Clock.yield() makes the robot wait until the next turn, then it will perform this loop again
                 Clock.yield();

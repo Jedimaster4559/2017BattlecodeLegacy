@@ -2,8 +2,7 @@ package legacybot.units;
 
 import battlecode.common.*;
 
-import static legacybot.tools.UnsortedTools.randomDirection;
-import static legacybot.tools.UnsortedTools.tryMove;
+import static legacybot.tools.UnsortedTools.*;
 
 public class Scout extends Unit {
     public Scout(RobotController rc){
@@ -18,6 +17,12 @@ public class Scout extends Unit {
 
             // Try/catch blocks stop unhandled exceptions, which cause your robot to explode
             try {
+
+                // Try to shake any trees that we can
+                tryShake(rc);
+
+                // Try to shake any trees that we can
+                tryShake(rc);
 
                 // Clock.yield() makes the robot wait until the next turn, then it will perform this loop again
                 Clock.yield();

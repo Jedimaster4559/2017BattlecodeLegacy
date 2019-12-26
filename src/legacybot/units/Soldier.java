@@ -32,6 +32,9 @@ public class Soldier extends Unit {
             // Try/catch blocks stop unhandled exceptions, which cause your robot to explode
             try {
 
+                // Try to shake any trees that we can
+                tryShake(rc);
+
                 checkState();
 
                 switch (state){
@@ -42,6 +45,9 @@ public class Soldier extends Unit {
                         aggressive();
                         break;
                 }
+
+                // Try to shake any trees that we can
+                tryShake(rc);
 
                 // Clock.yield() makes the robot wait until the next turn, then it will perform this loop again
                 Clock.yield();

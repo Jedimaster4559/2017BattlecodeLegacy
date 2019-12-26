@@ -18,6 +18,9 @@ public class Archon extends Unit{
             // Try/catch blocks stop unhandled exceptions, which cause your robot to explode
             try {
 
+                // Try to shake any trees that we can
+                tryShake(rc);
+
                 // Generate a random direction
                 Direction dir = randomDirection();
 
@@ -33,6 +36,9 @@ public class Archon extends Unit{
                 //MapLocation myLocation = rc.getLocation();
                 //.broadcast(0,(int)myLocation.x);
                 //.broadcast(1,(int)myLocation.y);
+
+                // Try to shake any trees that we can
+                tryShake(rc);
 
                 // Clock.yield() makes the robot wait until the next turn, then it will perform this loop again
                 Clock.yield();
