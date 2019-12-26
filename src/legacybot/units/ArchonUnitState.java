@@ -2,7 +2,7 @@ package legacybot.units;
 
 public enum ArchonUnitState {
     INITIAL,
-    ECONOMY,
+    FAST,
     SLOW,
     AGGRESSIVE,
     DEFENSIVE
