@@ -104,4 +104,23 @@ public class UnsortedTools {
             }
         }
     }
+
+    /**
+     * Checks if we can make a victory point win, and if so, does.
+     * @param rc
+     * @return The number of bullets we need to collect to win
+     * @throws GameActionException
+     */
+    public static float checkVictory(RobotController rc) throws GameActionException {
+        float possible = rc.getTeamBullets() / rc.getVictoryPointCost();
+        float current = rc.getTeamVictoryPoints();
+
+        if(possible >= 1000 - current){
+            rc.donate(rc.getTeamBullets());
+            return 0;
+        } else {
+            return (1000 - current) * rc.getVictoryPointCost();
+        }
+
+    }
 }
