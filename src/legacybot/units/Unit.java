@@ -15,6 +15,7 @@ public abstract class Unit {
     Team enemy;
     Random rand;
     int age; // The number of rounds this unit has been alive.
+    MapLocation spawn;
 
     public Unit(RobotController rc){
         this.rc = rc;
@@ -22,6 +23,8 @@ public abstract class Unit {
         
         //rand = new Random(1000);
         rand = new Random();
+
+        spawn = rc.getLocation();
 
         age = 0;
     }

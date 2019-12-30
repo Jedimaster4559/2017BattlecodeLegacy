@@ -130,7 +130,7 @@ public class Archon extends Unit{
         // TODO: This can be optimized a lot
         // Try rotating instead of random
         // Allow some type of escape cause this sometimes might break
-        if(rc.getTeamBullets() >= 100) {
+        if(rc.getTeamBullets() >= RobotType.GARDENER.bulletCost) {
             while (!rc.canHireGardener(hireDirection)) {
                 hireDirection = randomDirection();
                 if(Clock.getBytecodesLeft() < 5000){
